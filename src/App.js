@@ -1,14 +1,19 @@
-import React, { Component } from 'react';
-import Todo from './components/Todo';
+import React, { useState } from 'react';
+import Todo from './components/Todo.jsx';
+import Header from './components/Header.jsx';
+import Auth from './components/Auth.jsx';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <Todo />
-      </div>
-    );
-  }
-}
+const app = props => {
+  const [page, setPage] = useState('auth');
 
-export default App;
+  return (
+    <div className="App">
+      <Header onLoadTodo={() => setPage('todo')} onLoadAuth={() => setPage('auth')} />
+      <hr />
+      {page === 'todo' && <Todo />}
+      {page === 'auth' && <Auth />}
+    </div>
+  );
+};
+
+export default app;
