@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const todo = () => {
   const [task, setTask] = useState('');
+  const [storedTask, setStoredTask] = useState(null);
   const [todoList, setTodoList] = useState([]);
 
   useEffect(() => {
@@ -15,17 +16,27 @@ const todo = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (storedTask) {
+      setTodoList(todoList.concat(storedTask));
+    }
+  }, [storedTask]);
+
   const inputChangeHandler = event => {
     setTask(event.target.value);
   };
 
   const todoAddHandler = () => {
     if (task && task.trim() !== '') {
-      setTodoList(todoList.concat(task));
       axios
         .post('https://react-hooks-sample.firebaseio.com/todoList.json', { description: task })
-        .then(result => console.log(result))
-        .catch(error => console.log(error));
+        .then(result => {
+          setTimeout(() => {
+            const item = { id: result.data.name, description: task };
+            setStoredTask(item);
+          }, 3000);
+        })
+        .catch(error => {});
     }
     setTask('');
   };
