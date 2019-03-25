@@ -1,10 +1,25 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useReducer } from 'react';
 import axios from 'axios';
 
 const todo = () => {
+  const todoListReducer = (state, action) => {
+    switch (action.type) {
+      case 'SET':
+        return action.payload;
+      case 'ADD':
+        return state.concat(action.payload);
+      case 'REMOVE':
+        const newState = [...state];
+        const index = state.findIndex(item => item.id === action.payload.id);
+        return newState.splice(index, 1);
+      default:
+        return state;
+    }
+  };
+
+  const [todoList, dispatch] = useReducer(todoListReducer, []);
   const [task, setTask] = useState('');
   const [storedTask, setStoredTask] = useState(null);
-  const [todoList, setTodoList] = useState([]);
 
   useEffect(() => {
     axios.get('https://react-hooks-sample.firebaseio.com/todoList.json').then(result => {
@@ -12,13 +27,19 @@ const todo = () => {
         id: Object.keys(result.data)[i],
         description: el.description,
       }));
-      setTodoList(todos);
+      dispatch({
+        type: 'SET',
+        payload: todos,
+      });
     });
   }, []);
 
   useEffect(() => {
     if (storedTask) {
-      setTodoList(todoList.concat(storedTask));
+      dispatch({
+        type: 'ADD',
+        payload: storedTask,
+      });
     }
   }, [storedTask]);
 
