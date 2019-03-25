@@ -20,7 +20,6 @@ const todo = () => {
 
   const [todoList, dispatch] = useReducer(todoListReducer, []);
   const [task, setTask] = useState('');
-  const [storedTask, setStoredTask] = useState(null);
 
   useEffect(() => {
     axios.get('https://react-hooks-sample.firebaseio.com/todoList.json').then(result => {
@@ -34,15 +33,6 @@ const todo = () => {
       });
     });
   }, []);
-
-  useEffect(() => {
-    if (storedTask) {
-      dispatch({
-        type: 'ADD',
-        payload: storedTask,
-      });
-    }
-  }, [storedTask]);
 
   const inputChangeHandler = event => {
     setTask(event.target.value);
@@ -67,7 +57,10 @@ const todo = () => {
         .then(result => {
           setTimeout(() => {
             const item = { id: result.data.name, description: task };
-            setStoredTask(item);
+            dispatch({
+              type: 'ADD',
+              payload: item,
+            });
           }, 3000);
         })
         .catch(error => {});
