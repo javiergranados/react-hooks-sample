@@ -9,9 +9,10 @@ const todo = () => {
       case 'ADD':
         return state.concat(action.payload);
       case 'REMOVE':
-        const newState = [...state];
-        const index = state.findIndex(item => item.id === action.payload.id);
-        return newState.splice(index, 1);
+        const newState = [].concat(state);
+        const index = state.findIndex(item => item.id === action.payload);
+        newState.splice(index, 1);
+        return newState;
       default:
         return state;
     }
@@ -47,6 +48,18 @@ const todo = () => {
     setTask(event.target.value);
   };
 
+  const taskRemoveHandler = id => {
+    axios
+      .delete(`https://react-hooks-sample.firebaseio.com/todoList/${id}.json`)
+      .then(result => {
+        dispatch({
+          type: 'REMOVE',
+          payload: id,
+        });
+      })
+      .catch(error => {});
+  };
+
   const todoAddHandler = () => {
     if (task && task.trim() !== '') {
       axios
@@ -70,7 +83,9 @@ const todo = () => {
       </button>
       <ul>
         {todoList.map(element => (
-          <li key={element.id}>{element.description}</li>
+          <li key={element.id} onClick={() => taskRemoveHandler(element.id)}>
+            {element.description}
+          </li>
         ))}
       </ul>
     </Fragment>

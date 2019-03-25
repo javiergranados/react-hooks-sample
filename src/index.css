@@ -1,3 +1,9 @@
 body {
   font-family: sans-serif;
 }
+
+body .App ul > li {
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
