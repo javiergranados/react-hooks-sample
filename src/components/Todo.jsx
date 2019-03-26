@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useReducer, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useReducer, useRef, useMemo } from 'react';
 import axios from 'axios';
 import List from './List';
 
@@ -70,6 +70,7 @@ const todo = () => {
         .catch(error => {});
     }
     taskRef.current.value = '';
+    setInputValidationHandler(false);
   };
 
   return (
@@ -84,7 +85,12 @@ const todo = () => {
       <button type="button" onClick={todoAddHandler}>
         Add task
       </button>
-      <List items={todoList} onClickHandler={taskRemoveHandler} />
+      {useMemo(
+        () => (
+          <List items={todoList} onClickHandler={taskRemoveHandler} />
+        ),
+        [todoList]
+      )}
     </Fragment>
   );
 };
