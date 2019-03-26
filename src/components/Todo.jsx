@@ -1,5 +1,6 @@
-import React, { Fragment, useEffect, useReducer, useRef } from 'react';
+import React, { Fragment, useState, useEffect, useReducer, useRef } from 'react';
 import axios from 'axios';
+import List from './List';
 
 const todo = () => {
   const todoListReducer = (state, action) => {
@@ -19,6 +20,7 @@ const todo = () => {
   };
 
   const [todoList, dispatch] = useReducer(todoListReducer, []);
+  const [inputValidation, setInputValidationHandler] = useState(false);
   const taskRef = useRef();
 
   useEffect(() => {
@@ -33,6 +35,11 @@ const todo = () => {
       });
     });
   }, []);
+
+  const inputValidationHandler = value => {
+    const isValid = value.trim() !== '';
+    setInputValidationHandler(isValid);
+  };
 
   const taskRemoveHandler = id => {
     axios
@@ -67,17 +74,17 @@ const todo = () => {
 
   return (
     <Fragment>
-      <input type="text" placeholder="Todo" ref={taskRef} />
+      <input
+        type="text"
+        placeholder="Todo"
+        ref={taskRef}
+        onChange={event => inputValidationHandler(event.target.value)}
+        style={{ background: inputValidation ? 'transparent' : 'rgba(255,0,0,0.5)' }}
+      />
       <button type="button" onClick={todoAddHandler}>
         Add task
       </button>
-      <ul>
-        {todoList.map(element => (
-          <li key={element.id} onClick={() => taskRemoveHandler(element.id)}>
-            {element.description}
-          </li>
-        ))}
-      </ul>
+      <List items={todoList} onClickHandler={taskRemoveHandler} />
     </Fragment>
   );
 };
