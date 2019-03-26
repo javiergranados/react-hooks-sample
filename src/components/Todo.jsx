@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useReducer } from 'react';
+import React, { Fragment, useEffect, useReducer, useRef } from 'react';
 import axios from 'axios';
 
 const todo = () => {
@@ -19,7 +19,7 @@ const todo = () => {
   };
 
   const [todoList, dispatch] = useReducer(todoListReducer, []);
-  const [task, setTask] = useState('');
+  const taskRef = useRef();
 
   useEffect(() => {
     axios.get('https://react-hooks-sample.firebaseio.com/todoList.json').then(result => {
@@ -34,10 +34,6 @@ const todo = () => {
     });
   }, []);
 
-  const inputChangeHandler = event => {
-    setTask(event.target.value);
-  };
-
   const taskRemoveHandler = id => {
     axios
       .delete(`https://react-hooks-sample.firebaseio.com/todoList/${id}.json`)
@@ -51,6 +47,7 @@ const todo = () => {
   };
 
   const todoAddHandler = () => {
+    const task = taskRef.current.value;
     if (task && task.trim() !== '') {
       axios
         .post('https://react-hooks-sample.firebaseio.com/todoList.json', { description: task })
@@ -65,12 +62,12 @@ const todo = () => {
         })
         .catch(error => {});
     }
-    setTask('');
+    taskRef.current.value = '';
   };
 
   return (
     <Fragment>
-      <input type="text" placeholder="Todo" onChange={inputChangeHandler} value={task} />
+      <input type="text" placeholder="Todo" ref={taskRef} />
       <button type="button" onClick={todoAddHandler}>
         Add task
       </button>
